@@ -29,17 +29,11 @@ ktime_t delta[NR_SET_V_F];
 ktime_t max[NR_SET_V_F];
 
 enum ppb_power_mode {
-	DEFAULT_MODE,		/* normal mode */
-	LOW_POWER_MODE,
-	JUST_MAKE_MODE,
 	PERFORMANCE_MODE,	/* sports mode */
 	NUM_PPB_POWER_MODE
 };
 
 static const char *power_mode_str[NUM_PPB_POWER_MODE] = {
-	"Default(Normal) mode",
-	"Low Power mode",
-	"Just Make mode",
 	"Performance(Sports) mode"
 };
 
@@ -575,7 +569,7 @@ static ssize_t cpufreq_cci_mode_proc_write(struct file *file,
 	else {
 #ifdef CONFIG_HYBRID_CPU_DVFS
 		/* BY_PROC_FS */
-		cpuhvfs_update_cci_mode(mode, 0);
+		cpuhvfs_update_cci_mode(1, 0);
 #endif
 	}
 
