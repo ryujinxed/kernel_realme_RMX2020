@@ -192,7 +192,7 @@ static struct platform_driver g_gpufreq_pdrv = {
 static bool g_parking;
 static bool g_DVFS_is_paused_by_ptpod;
 static bool g_volt_enable_state;
-static bool g_keep_opp_freq_state;
+const char g_keep_opp_freq_state = true;
 static bool g_opp_stress_test_state;
 static bool g_fixed_freq_volt_state;
 static bool g_pbm_limited_ignore_state;
@@ -1539,6 +1539,7 @@ static ssize_t mt_gpufreq_opp_freq_proc_write(struct file *file,
 	char buf[64];
 	unsigned int len = 0;
 	unsigned int value = 0;
+	const int freq = 900000;
 	unsigned int i = 0;
 	int ret = -EFAULT;
 
@@ -1550,18 +1551,13 @@ static ssize_t mt_gpufreq_opp_freq_proc_write(struct file *file,
 	buf[len] = '\0';
 
 	if (kstrtouint(buf, 10, &value) == 0) {
-		if (value == 0) {
-			g_keep_opp_freq_state = false;
-		} else {
-			for (i = g_segment_max_opp_idx;
-				 i <= g_segment_min_opp_idx; i++) {
-				if (value == g_opp_table[i].gpufreq_khz) {
-					ret = 0;
-					g_keep_opp_freq_idx = i;
-					g_keep_opp_freq_state = true;
-					mt_gpufreq_target(i, true);
-					break;
-				}
+	for (i = g_segment_max_opp_idx;
+			 i <= g_segment_min_opp_idx; i++) {
+			if (freq == g_opp_table[i].gpufreq_khz) {
+				ret = 0;
+				g_keep_opp_freq_idx = i;
+				mt_gpufreq_target(i, true);
+				break;
 			}
 		}
 	}
@@ -3075,7 +3071,6 @@ static int __mt_gpufreq_pdrv_probe(struct platform_device *pdev)
 	int ret;
 
 	g_opp_stress_test_state = false;
-	g_keep_opp_freq_state = false;
 
 	node = of_find_matching_node(NULL, g_gpufreq_of_match);
 	if (!node)
