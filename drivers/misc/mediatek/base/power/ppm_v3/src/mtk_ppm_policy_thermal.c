@@ -55,7 +55,8 @@ void mt_ppm_cpu_thermal_protect(unsigned int limited_power)
 	}
 
 	thermal_policy.req.power_budget = limited_power;
-	thermal_policy.is_activated = (limited_power) ? true : false;
+	thermal_policy.is_activated = false;
+	thermal_policy.is_enabled = false;
 	ppm_unlock(&thermal_policy.lock);
 
 #ifdef PPM_THERMAL_ENHANCEMENT
@@ -251,4 +252,3 @@ static void __exit ppm_thermal_policy_exit(void)
 
 module_init(ppm_thermal_policy_init);
 module_exit(ppm_thermal_policy_exit);
-
