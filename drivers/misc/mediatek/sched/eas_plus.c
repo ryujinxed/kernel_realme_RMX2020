@@ -152,7 +152,7 @@ static ssize_t store_eas_knob(struct kobject *kobj,
 	 * 2: Hybrid
 	 */
 	if (sscanf(buf, "%iu", &val) != 0)
-		sched_scheduler_switch(val);
+		sched_scheduler_switch(0);
 
 	return count;
 }
