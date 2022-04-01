@@ -246,9 +246,9 @@ static unsigned int g_force_gpu_dvfs_fallback;
 module_param(gx_dfps, uint, 0644);
 module_param(gx_frc_mode, uint, 0644);
 #ifdef GED_KPI_CPU_BOOST
-module_param(enable_cpu_boost, uint, 0644);
+module_param(enable_cpu_boost, uint, 0444);
 #endif
-module_param(enable_gpu_boost, uint, 0644);
+module_param(enable_gpu_boost, uint, 0444);
 module_param(is_GED_KPI_enabled, uint, 0644);
 module_param(ap_self_frc_detection_rate, uint, 0644);
 /* for calculating remained time budgets of CPU and GPU:
@@ -271,12 +271,12 @@ static unsigned long long g_cpu_remained_time_accum;
 static unsigned long long g_gpu_freq_accum;
 static unsigned int g_frame_count;
 
-static int gx_game_mode;
+static int gx_game_mode = 1;
 static int gx_3D_benchmark_on;
+static int gx_force_cpu_boost = 1;
 #ifdef GED_KPI_CPU_BOOST
-static int gx_force_cpu_boost;
 static int gx_top_app_pid;
-static int enable_game_self_frc_detect;
+static int enable_game_self_frc_detect = 1;
 #endif
 static unsigned int gx_fps;
 static unsigned int gx_cpu_time_avg;
@@ -305,9 +305,9 @@ module_param(boost_extra, int, 0644);
 module_param(boost_amp, int, 0644);
 module_param(deboost_reduce, int, 0644);
 module_param(boost_upper_bound, int, 0644);
-module_param(enable_game_self_frc_detect, int, 0644);
+module_param(enable_game_self_frc_detect, int, 0444);
 #endif
-module_param(gx_game_mode, int, 0644);
+module_param(gx_game_mode, int, 0444);
 module_param(gx_3D_benchmark_on, int, 0644);
 
 int (*ged_kpi_push_game_frame_time_fp_fbt)(
@@ -1304,8 +1304,7 @@ static void ged_kpi_work_cb(struct work_struct *psWork)
 					enable_cpu_boost,
 					psHead->pid == gx_top_app_pid);
 
-			if ((gx_game_mode == 1 || gx_force_cpu_boost == 1)
-				&& enable_cpu_boost == 1) {
+			if (gx_game_mode == 1 || enable_cpu_boost == 1) {
 
 				if (ged_kpi_push_game_frame_time_fp_fbt
 					&& psHead->pid == gx_top_app_pid) {
@@ -2151,8 +2150,8 @@ void ged_kpi_set_game_hint(int mode)
 {
 #ifdef MTK_GED_KPI
 	if (mode == 1 || mode == 0) {
-		gx_game_mode = mode;
-		ged_kpi_set_game_hint_value(mode);
+		gx_game_mode = 1;
+		ged_kpi_set_game_hint_value(1);
 	}
 #endif
 }
